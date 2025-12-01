@@ -22,8 +22,8 @@ def load_models_and_data():
     clf = joblib.load("models/xgb_clf_tuned.joblib")
     reg = joblib.load("models/xgb_reg_tuned.joblib")
     feature_cols = joblib.load("models/feature_columns.joblib")
-    data_encoded = pd.read_csv("data/data_encoded.csv")
-    data_original = pd.read_csv("data/data_original.csv")
+    data_encoded = pd.read_csv("Data/data_encoded.csv")
+    data_original = pd.read_csv("Data/data_original.csv")
 
     # work out numeric / categorical from original data
     numeric_cols = data_original.select_dtypes(include=["int64", "float64"]).columns.tolist()
