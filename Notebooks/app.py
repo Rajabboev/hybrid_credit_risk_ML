@@ -150,19 +150,31 @@ def derive_credit_score_and_limit(risk_score_pred: float, income: float):
 
 def describe_default_probability(prob: float) -> str:
     """
-    Turn raw probability into a user-friendly explanation.
+    Convert a default probability into a user-friendly, industry-appropriate explanation.
     """
     if prob < 0.10:
         band = "Low"
-        msg = "The model expects this type of client to very rarely become seriously delinquent."
+        msg = (
+            "Clients in this range rarely experience significant payment problems. "
+            "Overall risk is low and repayment behaviour is generally stable."
+        )
     elif prob < 0.30:
         band = "Medium"
-        msg = "There is a noticeable chance of serious delinquency. Case should be reviewed carefully."
+        msg = (
+            "There is a moderate chance of future payment difficulties. "
+            "A detailed review of the client's financial situation is recommended."
+        )
     else:
         band = "High"
-        msg = "This client is very likely to become seriously delinquent compared to others."
+        msg = (
+            "There is a high likelihood that this client may experience serious payment problems. "
+            "This profile typically requires caution and additional risk controls."
+        )
 
-    return f"Risk level: **{band}** (about {prob:.1%} chance of serious delinquency).\n\n{msg}"
+    return (
+        f"**Risk Assessment: {band}** — approximately **{prob:.1%}** likelihood of "
+        f"major payment difficulties.\n\n{msg}"
+    )
 
 
 # =============================
@@ -181,12 +193,12 @@ You can either:
 """
 )
 
-tab_existing, tab_new = st.tabs(["Existing client from dataset", "New application (manual input)"])
+tab_existing, tab_new = st.tabs(["Existing client from dataset", "New application"])
 # =============================
 # TAB 1: Existing client (dashboard view)
 # =============================
 with tab_existing:
-    st.subheader("Existing client from training dataset")
+    st.subheader("Existing clients")
 
 
 
@@ -276,11 +288,7 @@ with tab_existing:
         st.write(f"**Risk band (from regression):** {risk_band}")
         st.write(f"**Recommended credit limit (demo rule):** {recommended_limit:,.0f}")
 
-        st.caption(
-            "The true labels are taken from the historical dataset. "
-            "In a live system, only the model predictions would be available, "
-            "and business rules would map them to approve / manual review / reject decisions."
-        )
+
 
         # ----- model performance cards -----
     st.markdown("### Model performance on historical data")
@@ -305,11 +313,11 @@ with tab_existing:
 # TAB 2: New manual application (simplified)
 # =============================
 with tab_new:
-    st.subheader("New application (simplified)")
+    st.subheader("New application")
 
     st.markdown(
         "Provide a few key details about the applicant. "
-        "Less important technical fields are filled with typical values from the training data."
+
     )
 
     with st.form("manual_form"):
@@ -439,7 +447,6 @@ with tab_new:
 
         st.info(
             "This decision is based on a hybrid ML model: a classifier for BAD/GOOD "
-            "and a regression model for continuous risk_score. Less important features "
-            "are fixed at typical values, so the focus is on the key drivers such as "
-            "age, income, employment, socio-economic segment and past credit behaviour."
+            "and a regression model for continuous risk_score."
+
         )
